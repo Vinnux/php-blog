@@ -1,11 +1,10 @@
 <?php
-
     $filename = __DIR__.'/data/articles.json';
     $articles = [];
     $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $id = $_GET['id'] ?? '';
 
-    if(!$id) {
+    if (!$id) {
         header('Location: /');
     } else {
         if(file_exists($filename)) {
@@ -28,7 +27,7 @@
         <?php require_once 'includes/header.php' ?>
             <div class="content">
                 <div class="article-container">
-                    <a href="/" class="article-back">Retour à la liste des articles</a>
+                    <a href="/" class="article-back">< Retour à la liste des articles</a>
                     <div class="article-cover-img" style="background-image: url(<?= $article['image'] ?>);"></div>
                     <h1 class="article-title"><?= $article['title'] ?></h1>
                     <div class="separator"></div>

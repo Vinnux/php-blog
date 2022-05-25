@@ -63,7 +63,7 @@ if (file_exists($filename)) {
                             <h2 class="p-10"><?= $cat ?></h2>
                             <div class="articles-container">
                                 <?php foreach ($articlesPerCategories[$cat] as $article) : ?>
-                                    <a href="/show-article.php?id<?= $article['id'] ?>" class="article block">
+                                    <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
                                         <div class="overflow">
                                             <div class="img-container" style="background-image: url(<?= $article['image'] ?>);" ></div>
                                         </div>
@@ -76,7 +76,7 @@ if (file_exists($filename)) {
                         <h2><?= $selectedCat ?></h2>
                         <div class="articles-container">
                             <?php foreach ($articlesPerCategories[$selectedCat] as $article) : ?>
-                                <a href="/show-article.php?id<?= $article['id'] ?>" class="article block">
+                                <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
                                     <div class="overflow">
                                         <div class="img-container" style="background-image: url(<?= $article['image'] ?>);"></div>
                                     </div>
