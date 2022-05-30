@@ -8,7 +8,8 @@ $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $selectedCat = $_GET['cat'] ?? '';
 
 if (file_exists($filename)) {
-    $articles = json_decode(file_get_contents($filename), true) ?? [];
+    $articles = json_decode(file_get_contents($filename), true, FILTER_FLAG_NO_ENCODE_QUOTES) ?? [];
+    // $articles = json_decode(file_get_contents($filename), true) ?? [];
     $catmap = array_map(fn ($a) => $a['category'], $articles);
     //je cree un tableau associatifs qui a pr cle les catégories et pr valeur le nb d'articles
     $categories = array_reduce($catmap, function ($acc, $cat) {

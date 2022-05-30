@@ -6,6 +6,7 @@
 
     $filename = __DIR__.'/data/articles.json';
     $articles = [];
+    $category = '';
 
     $errors = [
         'title' => '',
@@ -13,11 +14,26 @@
         'category' => '',
         'content' => ''
     ];
+    if(file_exists($filename)) {
+            $articles = json_decode(file_get_contents($filename), true) ?? [];
+    }
+
+    $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $id = $_GET['id'] ?? '';
+
+    if($id) {
+        $articleIdx = array_search($id, array_column($articles, 'id'));
+        $article = $articles[$articleIdx];
+
+        $title = $article['title'];
+        $image = $article['image'];
+        $category = $article['category'];
+        $content = $article['content'];
+        }
+
 
     if($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if(file_exists($filename)) {
-            $articles = json_decode(file_get_contents($filename), true) ?? [];
-        }
+        
 
         $_POST = filter_input_array(INPUT_POST, [
             'title' => FILTER_SANITIZE_SPECIAL_CHARS,
@@ -57,13 +73,21 @@
         }
 
         if(empty(array_filter($errors, fn($e) => $e !== ''))) {
-            $articles = [$articles, [
-                'title' => $title,
-                'image' => $image,
-                'category' => $category,
-                'content' => $content,
-                'id' => time()
-            ]];
+            
+            if($id) {
+                $articles[$articleIdx]['title'] = $title;
+                $articles[$articleIdx]['image'] = $image;
+                $articles[$articleIdx]['category'] = $category;
+                $articles[$articleIdx]['content'] = $content;
+            } else {
+                $articles = [$articles, [
+                    'title' => $title,
+                    'image' => $image,
+                    'category' => $category,
+                    'content' => $content,
+                    'id' => time()
+                ]];
+            }
             
             file_put_contents($filename, json_encode($articles));
             header('Location: /');
@@ -78,26 +102,26 @@
 <html lang="en">
 <head>
     <?php require_once 'includes/head.php' ?>
-    <link rel="stylesheet" href="public/css/add-article.css">
-    <title>Créer un article</title>
+    <link rel="stylesheet" href="public/css/form-article.css">
+    <title><?= $id ? 'Editer' : 'Créer' ?> un article</title>
 </head>
 <body>
     <div class="container">
         <?php require_once 'includes/header.php' ?>
         <div class="content">
             <div class="block p-20 form-container">
-                <h1>Ecrire un article</h1>
-                <form action="/add-article.php" method="POST">
+                <h1><?= $id ? 'Modifier' : 'Ecrire' ?> un article</h1>
+                <form action="/form-article.php<?= $id ? "?id=$id" : '' ?>" method="POST">
                     <div class="form-control">
                         <label for="title">Titre</label>
-                        <input type="text" name="title" id="title">
+                        <input type="text" name="title" id="title" value="<?= $title ?? '' ?>">
                         <?php if($errors['title']) : ?>
                             <p class="text-danger"><?= $errors['title'] ?></p>
                             <?php endif; ?>
                     </div>
                     <div class="form-control">
                         <label for="image">Images</label>
-                        <input type="text" name="image" id="image">
+                        <input type="text" name="image" id="image" value="<?= $image ?? ''?>">
                         <?php if($errors['image']) : ?>
                             <p class="text-danger"><?= $errors['image'] ?></p>
                             <?php endif; ?>
@@ -105,9 +129,9 @@
                     <div class="form-control">
                         <label for="category">Categorie</label>
                         <select name="category" id="category">
-                            <option value="Technologie">Technologie</option>
-                            <option value="Nature">Nature</option>
-                            <option value="Politique">Politique</option>
+                            <option <?= !$category || $category === 'Technologie' ? 'selected' : '' ?> value="Technologie">Technologie</option>
+                            <option <?= $category === 'Nature' ? 'selected' : '' ?> value="Nature">Nature</option>
+                            <option <?= $category === 'Politique' ? 'selected' : '' ?> value="Politique">Politique</option>
                         </select>
                         <?php if($errors['category']) : ?>
                             <p class="text-danger"><?= $errors['category'] ?></p>
@@ -115,14 +139,14 @@
                     </div>
                     <div class="form-control">
                         <label for="title">Contenu</label>
-                        <textarea name="content" id="content"></textarea>
+                        <textarea name="content" id="content"><?= $content ?? '' ?></textarea>
                         <?php if($errors['content']) : ?>
                             <p class="text-danger"><?= $errors['content'] ?></p>
                             <?php endif; ?>
                     </div>
                     <div class="form-action">
                         <a href="/" class="btn btn-secondary" type="button">Annuler</a>
-                        <button class="btn btn-primary" type="submit">Publier</button>
+                        <button class="btn btn-primary" type="submit"><?= $id ? 'Sauvegarder' : 'Publier' ?></button>
                     </div>
                 </form>
             </div>
