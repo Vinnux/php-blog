@@ -8,10 +8,10 @@ $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $selectedCat = $_GET['cat'] ?? '';
 
 if (file_exists($filename)) {
-    $articles = json_decode(file_get_contents($filename), true, FILTER_FLAG_NO_ENCODE_QUOTES) ?? [];
-    // $articles = json_decode(file_get_contents($filename), true) ?? [];
+    $articles = json_decode(file_get_contents($filename), true) ?? [];
     $catmap = array_map(fn ($a) => $a['category'], $articles);
-    //je cree un tableau associatifs qui a pr cle les catégories et pr valeur le nb d'articles
+
+    // je cree un tableau associatif qui a pour cles les categories et pour valeur le nombre d'article
     $categories = array_reduce($catmap, function ($acc, $cat) {
         if (isset($acc[$cat])) {
             $acc[$cat]++;
@@ -20,7 +20,11 @@ if (file_exists($filename)) {
         }
         return $acc;
     }, []);
-    //je cree un tableau associatif qui a pr clef les categories et pr valeur tout les articles de cette categorie
+
+    // print_r($categories);
+
+    // je cree un tableau associatif qui a pour cles les categories et pour valeur tous les articles
+    // concernant la categorie
     $articlesPerCategories = array_reduce($articles, function ($acc, $article) {
         if (isset($acc[$article['category']])) {
             $acc[$article['category']] = [...$acc[$article['category']], $article];
@@ -29,10 +33,12 @@ if (file_exists($filename)) {
         }
         return $acc;
     }, []);
+
+    // print_r($articlesPerCategories);
 }
 
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +46,6 @@ if (file_exists($filename)) {
 <head>
     <?php require_once 'includes/head.php' ?>
     <link rel="stylesheet" href="public/css/index.css">
-    <title>BLOG APP</title>
 </head>
 
 <body>
@@ -49,13 +54,17 @@ if (file_exists($filename)) {
         <div class="content">
             <div class="newsfeed-container">
                 <ul class="category-container">
-                    <li class="<?= $selectedCat ? '' : 'cat-active' ?>"><a href="/">
-                            Tous les articles <span class="small">(<?= count($articles) ?>)</span>
-                        </a></li>
+                    <li class="<?= $selectedCat ? '' : 'cat-active' ?>">
+                        <a href="/">
+                            Tous les articles<span class="small">(<?= count($articles) ?>)</span>
+                        </a>
+                    </li>
                     <?php foreach ($categories as $catName => $catNum) : ?>
-                        <li class="<?= $selectedCat === $catName ? 'cat-active' : '' ?>"><a href="/?cat=<?= $catName ?>">
-                                <?= $catName ?> <span class="small">(<?= $catNum ?>)</span>
-                            </a></li>
+                        <li class="<?= $selectedCat === $catName ? 'cat-active' : '' ?>">
+                            <a href="/?cat=<?= $catName ?>">
+                                <?= $catName ?><span class="small">(<?= $catNum ?>)</span>
+                            </a>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
                 <div class="feed-container">
@@ -66,10 +75,10 @@ if (file_exists($filename)) {
                                 <?php foreach ($articlesPerCategories[$cat] as $article) : ?>
                                     <a href="/show-article.php?id=<?= $article['id'] ?>" class="article block">
                                         <div class="overflow">
-                                            <div class="img-container" style="background-image: url(<?= $article['image'] ?>);" ></div>
+                                            <div class="img-container" style="background-image: url(<?= $article['image'] ?>);"></div>
                                         </div>
                                         <h3><?= $article['title'] ?></h3>
-                                    </a>
+                                </a>
                                 <?php endforeach; ?>
                             </div>
                         <?php endforeach; ?>
@@ -86,10 +95,8 @@ if (file_exists($filename)) {
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
-
                 </div>
             </div>
-
         </div>
         <?php require_once 'includes/footer.php' ?>
     </div>
