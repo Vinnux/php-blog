@@ -1,10 +1,8 @@
 <?php
-    /**
-    * @var PDO
-    */
-    $pdo = require_once './database.php';
-    $statement = $pdo->prepare('SELECT * FROM article WHERE id=:id');
-
+/**
+ * @var ArticleDAO
+ */
+    $articleDAO = require_once './database/models/ArticleDAO.php';
 
 
     // $filename = __DIR__.'/data/articles.json';
@@ -21,10 +19,10 @@
         //     $articles = json_decode(file_get_contents($filename), true) ?? [];
         //     $articleIdx = array_search($id, array_column($articles, 'id'));
         //     $article = $articles[$articleIdx];}
-        $statement->bindValue(':id', $id);
-        $statement->execute();
-        $article = $statement->fetch();
-        
+        // $statement->bindValue(':id', $id);
+        // $statement->execute();
+        // $article = $statement->fetch();
+        $article = $articleDAO->getOne($id);
     }
 
 ?>

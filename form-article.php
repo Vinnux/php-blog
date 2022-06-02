@@ -1,16 +1,21 @@
 <?php
 
+// /**
+//  * @var PDO
+//  */
+// $pdo = require_once './database.php';
+// $statementCreateOne = $pdo->prepare('
+//     INSERT INTO article (title, category, content, image) VALUES (:title, :category, :content, :image)
+// ');
+// $statementUpdateOne = $pdo->prepare('
+//     UPDATE article SET title=:title, category=:category, content=:content, image=:image WHERE id=:id
+// ');
+// $statementReadOne = $pdo->prepare('SELECT * FROM article WHERE id=:id');
+
 /**
- * @var PDO
+ * @var ArticleDAO
  */
-$pdo = require_once './database.php';
-$statementCreateOne = $pdo->prepare('
-    INSERT INTO article (title, category, content, image) VALUES (:title, :category, :content, :image)
-');
-$statementUpdateOne = $pdo->prepare('
-    UPDATE article SET title=:title, category=:category, content=:content, image=:image WHERE id=:id
-');
-$statementReadOne = $pdo->prepare('SELECT * FROM article WHERE id=:id');
+$articleDAO = require_once './database/models/ArticleDAO.php';
 
 const ERROR_REQUIRED = "Veuillez renseigner ce champ";
 const ERROR_TITLE_TOO_SHORT = "Le titre est trop court";
@@ -36,9 +41,10 @@ $_GET = filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $id = $_GET['id'] ?? '';
 
 if ($id) {
-    $statementReadOne->bindValue(':id', $id);
-    $statementReadOne->execute();
-    $article = $statementReadOne->fetch();
+    $article = $articleDAO->getOne($id);
+    // $statementReadOne->bindValue(':id', $id);
+    // $statementReadOne->execute();
+    // $article = $statementReadOne->fetch();
     // $articleIdx = array_search($id, array_column($articles, 'id'));
     // $article = $articles[$articleIdx];
 
@@ -95,12 +101,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // $article['category'] = $category;
             // $article['content'] = $content;
 //On met à jour la bdd
-            $statementUpdateOne->bindValue(':title', $title);
-            $statementUpdateOne->bindValue(':category', $category);
-            $statementUpdateOne->bindValue(':content', $content); 
-            $statementUpdateOne->bindValue(':image', $image); 
-            $statementUpdateOne->bindValue(':id', $id);
-            $statementUpdateOne->execute();
+            $articleDAO->updateOne([
+                'title' => $title,
+                'category' => $category,
+                'content' => $content,
+                'image' => $image,
+                'id' => $id
+            ]);
+
+            // $statementUpdateOne->bindValue(':title', $title);
+            // $statementUpdateOne->bindValue(':category', $category);
+            // $statementUpdateOne->bindValue(':content', $content); 
+            // $statementUpdateOne->bindValue(':image', $image); 
+            // $statementUpdateOne->bindValue(':id', $id);
+            // $statementUpdateOne->execute();
         } else { //creer un new article
             // $articles = [...$articles, [
             //     'title' => $title,
@@ -109,11 +123,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             //     'content' => $content,
             //     'id' => time()
             // ]];
-            $statementCreateOne->bindValue(':title', $title);
-            $statementCreateOne->bindValue(':category', $category);
-            $statementCreateOne->bindValue(':content', $content); 
-            $statementCreateOne->bindValue(':image', $image);
-            $statementCreateOne->execute();
+            // $statementCreateOne->bindValue(':title', $title);
+            // $statementCreateOne->bindValue(':category', $category);
+            // $statementCreateOne->bindValue(':content', $content); 
+            // $statementCreateOne->bindValue(':image', $image);
+            // $statementCreateOne->execute();
+            $articleDAO->createOne([
+                'title' => $title,
+                'category' => $category,
+                'content' => $content,
+                'image' => $image
+            ]);
         }
 
         // file_put_contents($filename, json_encode($articles));
@@ -136,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="content">
             <div class="block p-20 form-container">
                 <h1><?= $id ? 'Modifier ' : 'Creer ' ?>un article</h1>
-                <form action="/form-article.php<?= $id ? '?id=$id' : '' ?>" method="POST">
+                <form action="/form-article.php<?= $id ? "?id=$id" : '' ?>" method="POST">
                     <div class="form-control">
                         <label for="title">Titre</label>
                         <input type="text" name="title" id="title" value="<?= $title ?? '' ?>">
