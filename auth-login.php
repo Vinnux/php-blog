@@ -3,8 +3,8 @@
 
     const ERROR_REQUIRED = "Veuillez renseigner ce champs";
     const ERROR_EMAIL_INVALID = "L'email n'est pas valide.";
-    const ERROR_PASSWORD_MISMATCH = "Le mot de passe n'est pas identique.";
-
+    const ERROR_PASSWORD_MISMATCH = "Le mot de passe n'est pas valide";
+    const ERROR_EMAIL_UNKNOWN = "L'email n'est pas enregistré.";
 
     $errors = [
         'email' => '',
@@ -32,16 +32,37 @@
         }
         if(!$password) {
             $errors['password'] = ERROR_REQUIRED;
-        } else if(mb_strlen($password) <6) {
-            $errors['password'] = ERROR_PASSWORD_TOO_SHORT;
         }
         
         
         if(empty(array_filter($errors, fn ($e) => $e !== ''))) {
-            
+            $statementUser = $pdo->prepare('
+                SELECT * FROM user WHERE email=:email
+            ');
+            $statementUser->bindValue(':email', $email);
+            $statementUser->execute();
+            $user = $statementUser->fetch();
 
+            if(!$user) {
+                $errors['email'] = ERROR_EMAIL_UNKNOWN;
+            } else {
+                if(!password_verify($password, $user['password'])){
+                    $errors['password'] = ERROR_PASSWORD_MISMATCH;
+                } else {
+                    $statementSession = $pdo->prepare('
+                    INSERT INTO session VALUES (DEFAULT, :userid)
+                    ');
+                    $statementSession->bindValue(':userid', $user['id']);
+                    $statementSession->execute();
+                    //recuperation de l'id de session que l'on vient d'enregistrer dans la bdd
+                    $sessionId = $pdo->lastInsertId();
 
-            header('Location: /');
+                    //creer notre cookie
+                    setcookie('session', $sessionId, time() + 60 * 60 *24 *14, '', '', false, true);
+                    
+                    header('Location: /');
+                }
+            }
         }
     }
 ?>

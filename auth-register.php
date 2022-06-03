@@ -118,7 +118,7 @@
                     </div>
                     <div class="form-control">
                         <label for="confirm_password">Confirmation du mot de passe</label>
-                        <input type="text" name="confirm_password" id="confirm_password" value="<?= $confirm_password ?? '' ?>">
+                        <input type="password" name="confirm_password" id="confirm_password" value="<?= $confirm_password ?? '' ?>">
                         <?php if ($errors['confirm_password']) : ?>
                             <p class="text-danger"><?= $errors['confirm_password'] ?></p>
                         <?php endif; ?>
