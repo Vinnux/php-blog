@@ -110,10 +110,10 @@
                         <?php endif; ?>
                     </div>
                     <div class="form-control">
-                        <label for="confirm_password">Mot de passe</label>
-                        <input type="password" name="confirm_password" id="confirm_password" value="<?= $confirm_password ?? '' ?>">
-                        <?php if ($errors['confirm_password']) : ?>
-                            <p class="text-danger"><?= $errors['confirm_password'] ?></p>
+                        <label for="password">Mot de passe</label>
+                        <input type="password" name="password" id="password" value="<?= $password ?? '' ?>">
+                        <?php if ($errors['password']) : ?>
+                            <p class="text-danger"><?= $errors['password'] ?></p>
                         <?php endif; ?>
                     </div>
                     <div class="form-control">

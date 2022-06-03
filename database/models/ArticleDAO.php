@@ -1,6 +1,5 @@
 <?php
 
-
 class ArticleDAO {
     private PDOStatement $statementCreateOne;
     private PDOStatement $statementReadOne;
