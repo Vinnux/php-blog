@@ -11,17 +11,17 @@ class ArticleDAO {
     function __construct(private PDO $pdo)
     {
         $this->statementCreateOne = $this->pdo->prepare('
-            INSERT INTO article (title, category, content, image, author ) VALUES (:title, :category, :content, :image, author=:author)
+            INSERT INTO article (title, category, content, image, author ) VALUES (:title, :category, :content, :image, :author)
         ');
 
         $this->statementUpdateOne = $this->pdo->prepare('
             UPDATE article SET title=:title, category=:category, content=:content, image=:image, author=:author WHERE id=:id
         ');
 
-        $this->statementReadOne = $this->pdo->prepare('SELECT article.*, user.firstname, user.lastname FROM article LEFT JOIN user ON article.author = user.id WHERE id=:id');
+        $this->statementReadOne = $this->pdo->prepare('SELECT article.*, user.firstname, user.lastname FROM article LEFT JOIN user ON article.author = user.id WHERE article.id=:id');
 
         $this->statementReadAll = $this->pdo->prepare('SELECT article.*, user.firstname, user.lastname FROM article LEFT JOIN user ON article.author = user.id');
-        
+
         $this->statementDeleteOne = $this->pdo->prepare('DELETE FROM article WHERE id=:id');
     }
 
