@@ -1,6 +1,8 @@
 <?php
 
 require_once './database/database.php';
+require_once __DIR__.'/database/security.php';
+$currentUser = isLoggedIn();
 /**
  * @var ArticleDAO
  */
@@ -46,10 +48,13 @@ require_once './database/database.php';
                 <h1 class="article-title"><?= $article['title'] ?></h1>
                 <div class="separator"></div>
                 <p class="article-content"><?= $article['content'] ?></p>
+                <p class="article-author"><?= $article['firstname']. ''.$article['lastname'] ?></p>
+                <?php if($currentUser && $currentUser['id'] === $article['author']) : ?>
                 <div class="action">
                     <a class="btn btn-danger" href="/delete-article.php?id=<?= $article['id'] ?>">Supprimer</a>
                     <a class="btn btn-primary" href="/form-article.php?id=<?= $article['id'] ?>">Modifier l'article</a>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php require_once 'includes/footer.php' ?>

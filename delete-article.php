@@ -1,5 +1,12 @@
 <?php
 require_once './database/database.php';
+require_once __DIR__.'/database/security.php';
+
+$currentUser = isLoggedIn();
+
+if(!$currentUser) {
+    header('Location: /');
+}
 // /**
 //  * @var PDO
 //  */
@@ -27,6 +34,13 @@ $id = $_GET['id'] ?? '';
 // }
 
 if($id) {
-    $articleDAO->deleteOne($id);
+    $article = $articleDAO->getOne($id);
+
+    if($currentUser['id'] === $article['author']) {
+        $articleDAO->deleteOne($id);
+    } else {
+        header('Location: /');
+    }
+    
 }
 header('Location: /');
