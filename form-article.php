@@ -51,6 +51,9 @@ $id = $_GET['id'] ?? '';
 
 if ($id) {
     $article = $articleDAO->getOne($id);
+    if($article['author'] !== $currentUser['id']) {
+        header('Location: /');
+    }
     // $statementReadOne->bindValue(':id', $id);
     // $statementReadOne->execute();
     // $article = $statementReadOne->fetch();
