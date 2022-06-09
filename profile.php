@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__.'/database/database.php';
-require_once __DIR__.'/database/security.php';
+$authDAO = require_once __DIR__.'/database/security.php';
 
-$currentUser = isLoggedIn();
+$currentUser = $authDAO->isLoggedIn();
 
 $articleDAO = require_once __DIR__.'/database/models/ArticleDAO.php';
 $articles = [];
@@ -52,8 +52,8 @@ $articles = $articleDAO->fetchUserArticles($currentUser['id']);
                         <li>
                             <span><?= substr($article['title'], 0, 90)." ..." ?></span>
                             <div class="article-action">
-                                <a href="/delete-article.php?id=<?= $article['id'] ?>" class="btn btn-small">Supprimer</a>
-                                <a href="/form-article.php?id=<?= $article['id'] ?>"class="btn btn-primary btn-small">Modifier</a>
+                            <a href="/delete-article.php?id=<?= $article['id'] ?>" class="btn btn-danger btn-small">Supprimer</a>
+                                <a href="/form-article.php?id=<?= $article['id'] ?>" class="btn btn-primary btn-small">Modifier</a>
                             </div>
                         </li>
                     <?php endforeach; ?>
